@@ -687,3 +687,64 @@ def process_order():
 #* • If payment is below the discounted fee, display "Insufficient payment" and the missing amount. Otherwise, display
 #* "Registration confirmed", student ID, workshop, discount, final fee, and change.
 #* • Do not print a confirmation or calculate change when any earlier validation fails.
+
+def workshop_registration():
+    student_id = input("Enter student ID (8 digits): ").strip()
+    if len(student_id) != 8 or not student_id.isascii() or not student_id.isdecimal():
+        print("Invalid student ID: Must be exactly 8 ASCII digits.")
+        return
+
+    age_str = input("Enter your age: ").strip()
+    if not age_str or not age_str.isascii() or not age_str.isdecimal():
+        print("Invalid age: Must contain only ASCII digits.")
+        return
+
+    age = int(age_str)
+    if age < 16 or age > 65:
+        print("Invalid age: Must be between 16 and 65 inclusive.")
+        return
+
+    workshop_code = input("Enter workshop code (PY/WEB/CY): ").strip().upper()
+    match workshop_code:
+        case 'PY':
+            workshop_name = "Python Basics"
+            fee = 30
+            min_age = 16
+        case 'WEB':
+            workshop_name = "Web Development"
+            fee = 40
+            min_age = 16
+        case 'CY':
+            workshop_name = "Cybersecurity"
+            fee = 50
+            min_age = 18
+        case _:
+            print("Invalid workshop code. Please enter PY, WEB, or CY.")
+            return
+
+    if age < min_age:
+        print(f"Applicant does not meet the minimum age requirement for {workshop_name}.")
+        return
+
+    discount = 0.20 * fee if 16 <= age <= 18 else 0
+    final_fee = fee - discount
+
+    payment_str = input(f"Enter payment amount in AZN (must be at least {final_fee:.2f}): ").strip()
+    if not payment_str or not payment_str.isascii() or not payment_str.isdecimal():
+        print("Invalid payment: Must contain only ASCII digits.")
+        return
+
+    payment_amount = int(payment_str)
+    if payment_amount < final_fee:
+        missing_amount = final_fee - payment_amount
+        print(f"Insufficient payment. You are missing {missing_amount:.2f} AZN.")
+        return
+
+    change = payment_amount - final_fee
+    print("Registration confirmed.")
+    print(f"Student ID: {student_id}")
+    print(f"Workshop: {workshop_name}")
+    print(f"Discount: {discount:.2f} AZN")
+    print(f"Final Fee: {final_fee:.2f} AZN")
+    print(f"Change: {change:.2f} AZN")
+    
